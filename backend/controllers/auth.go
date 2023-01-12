@@ -1,12 +1,18 @@
 package controllers
 
 import (
+	"fmt"
 	"react-go-jwt/database"
 	"react-go-jwt/models"
+	"strconv"
+	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
 )
+
+const SECRET_KEY = "8kjasdlzx48vcx9qkzxc"
 
 func Register(c *fiber.Ctx) error {
 	var data map[string]string
@@ -82,5 +88,32 @@ func Login (c *fiber.Ctx) error {
 
 	}
 
-	return c.JSON(user)
+	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
+		Issuer: strconv.Itoa(int(user.Id)),
+		ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
+	})
+
+	token, err := claims.SignedString([]byte(SECRET_KEY))
+
+	if err != nil {
+		fmt.Printf("cant login: %s\n", err)
+
+		response["error"] = "cant login"
+		c.Status(400)
+		
+		return c.JSON(response)
+	}
+
+	cookie := fiber.Cookie{
+		Name: "jwt",
+		Value: token,
+		Expires: time.Now().Add(time.Hour * 24),
+		HTTPOnly: true,
+	}
+
+	c.Cookie(&cookie)
+
+	return c.JSON(fiber.Map{
+		"message": "success",
+	})
 }
