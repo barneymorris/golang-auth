@@ -117,3 +117,51 @@ func Login (c *fiber.Ctx) error {
 		"message": "success",
 	})
 }
+
+func User(c *fiber.Ctx) error {
+	response := make(map[string]string)
+
+	cookie := c.Cookies("jwt")
+
+
+	if cookie == "" {
+		response["error"] = "not provided jwt cookie"
+		c.Status(401)
+
+		return c.JSON(response)
+	}
+
+	token, err := jwt.ParseWithClaims(cookie, &jwt.StandardClaims{}, func (token *jwt.Token) (interface{}, error) {
+		return []byte(SECRET_KEY), nil
+	})
+
+	if err != nil {
+			response["error"] = "invalid credentials"
+			c.Status(401)
+	
+			return c.JSON(response)
+	}
+
+	claims := token.Claims.(jwt.StandardClaims)
+
+	var user models.User
+
+	database.DB.Where("id = ?", claims.Issuer).First(&user)
+
+	return c.JSON(user)
+}
+
+func Logout(c *fiber.Ctx) error {
+	cookie := fiber.Cookie{
+		Name: "jwt",
+		Value: "",
+		Expires: time.Now().Add(-time.Hour),
+		HTTPOnly: true,
+	}
+
+	c.Cookie(&cookie)
+
+	return c.JSON(fiber.Map{
+		"message": "success",
+	})
+}
