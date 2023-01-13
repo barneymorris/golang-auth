@@ -142,7 +142,7 @@ func User(c *fiber.Ctx) error {
 			return c.JSON(response)
 	}
 
-	claims := token.Claims.(jwt.StandardClaims)
+	claims := token.Claims.(*jwt.StandardClaims)
 
 	var user models.User
 

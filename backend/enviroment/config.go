@@ -3,7 +3,7 @@ package enviroment
 type EnvConfig struct {
 	DbUser     string `env:"DBUSER" envDefault:"go"`
 	DbPassword string `env:"DBPASSWORD" envDefault:"pass"`
-	DbHost     string `env:"DBHOST" envDefault:"db"`
+	DbHost     string `env:"DBHOST" envDefault:"localhost"`
 	DbPort     string `env:"DBPORT" envDefault:"3306"`
 	DbName     string `env:"DBNAME" envDefault:"db"`
 }
