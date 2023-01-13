@@ -8,6 +8,8 @@ require (
 	gorm.io/gorm v1.24.3
 )
 
+require github.com/caarlos0/env/v6 v6.10.1 // indirect
+
 require (
 	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
